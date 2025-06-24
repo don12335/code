@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>🔐 密碼產生器</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 密碼產生器</h1>
+
+    <label>密碼長度：<input type="number" id="length" min="4" max="50" value="12"></label>
+    <label><input type="checkbox" id="uppercase" checked> 包含大寫字母</label>
+    <label><input type="checkbox" id="lowercase" checked> 包含小寫字母</label>
+    <label><input type="checkbox" id="numbers" checked> 包含數字</label>
+    <label><input type="checkbox" id="symbols"> 包含符號</label>
+
+    <button onclick="generatePassword()">產生密碼</button>
+    <button onclick="generatePassword()">🔁 再產生一次</button>
+
+    <div id="result" onclick="copyPassword()">點我複製密碼</div>
+    <div id="strength">強度：-</div>
+
+    <label class="toggle-mode">
+      <input type="checkbox" id="darkModeToggle"> 🌙 暗模式
+    </label>
+  </div>
+
+  <script>
+    const result = document.getElementById("result");
+    const strength = document.getElementById("strength");
+
+    function generatePassword() {
+      const length = +document.getElementById("length").value;
+      const useUpper = document.getElementById("uppercase").checked;
+      const useLower = document.getElementById("lowercase").checked;
+      const useNumber = document.getElementById("numbers").checked;
+      const useSymbol = document.getElementById("symbols").checked;
+
+      const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const lower = "abcdefghijklmnopqrstuvwxyz";
+      const numbers = "0123456789";
+      const symbols = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+      let chars = "";
+      if (useUpper) chars += upper;
+      if (useLower) chars += lower;
+      if (useNumber) chars += numbers;
+      if (useSymbol) chars += symbols;
+
+      if (chars === "") {
+        alert("請至少選一種字元類型！");
+        return;
+      }
+
+      let password = "";
+      for (let i = 0; i < length; i++) {
+        password += chars[Math.floor(Math.random() * chars.length)];
+      }
+
+      result.textContent = password;
+      checkStrength(password);
+    }
+
+    function copyPassword() {
+      const text = result.textContent;
+      if (!text) return;
+      navigator.clipboard.writeText(text);
+      alert("密碼已複製！");
+    }
+
+    function checkStrength(pw) {
+      let score = 0;
+      if (/[A-Z]/.test(pw)) score++;
+      if (/[a-z]/.test(pw)) score++;
+      if (/[0-9]/.test(pw)) score++;
+      if (/[^A-Za-z0-9]/.test(pw)) score++;
+      if (pw.length >= 12) score++;
+
+      const label = ["非常弱", "弱", "普通", "強", "非常強"];
+      strength.textContent = "強度：" + label[Math.min(score, label.length - 1)];
+    }
+
+    // 暗模式切換
+    document.getElementById("darkModeToggle").addEventListener("change", function () {
+      document.body.classList.toggle("dark", this.checked);
+    });
+  </script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #f4f4f4;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    label {
+      display: block;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    input[type="number"] {
+      width: 60px;
+      padding: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    #result {
+      margin-top: 15px;
+      padding: 10px;
+      font-size: 18px;
+      background: #eee;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #strength {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .toggle-mode {
+      margin-top: 20px;
+      font-size: 16px;
+    }
+    /* 暗模式 */
+    body.dark {
+      background: #121212;
+      color: #eee;
+    }
+    body.dark .container {
+      background: #1e1e1e;
+      box-shadow: 0 0 10px #000;
+    }
+    body.dark #result {
+      background: #333;
+      color: #fff;
+    }
+  </style>
+</body>
+</html>
